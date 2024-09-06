@@ -9,6 +9,6 @@ int main(void) {
     pthread_t thread;
     pthread_create(&thread, NULL, win_main, NULL);
 
-    pthread_joid(thread);
+    pthread_join(thread, NULL);
     return 0;
 }
