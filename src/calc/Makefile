@@ -13,7 +13,7 @@ ARFLAGS = rcs
 
 SRC = myCalc.c
 OBJ = $(patsubst %.c,$(BUILD_DIR)/%.o,$(SRC))
-LIB = $(BUILD_DIR)/libmyClac.a
+LIB = $(BUILD_DIR)/libmyCalc.a
 
 all: $(LIB)
 

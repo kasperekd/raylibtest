@@ -1,5 +1,7 @@
 #include "myRay.h"
 
+#include "common.h"
+
 // #define MAX_CIRCLES 64
 
 // typedef struct {
@@ -11,13 +13,14 @@
 // } CircleWave;
 
 void *win_main(void *arg) {
+    ThreadData *data = (ThreadData *)arg;
+
     const int screenWidth = 800;
     const int screenHeight = 450;
 
     // SetConfigFlags(FLAG_MSAA_4X_HINT);  // NOTE: Try to enable MSAA 4X
 
-    InitWindow(screenWidth, screenHeight,
-               "raylib [audio] example - module playing (streaming)");
+    InitWindow(screenWidth, screenHeight, "raylib");
 
     InitAudioDevice();  // Initialize audio device
 
@@ -51,10 +54,14 @@ void *win_main(void *arg) {
 
     SetTargetFPS(60);  // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
-
+    size_t itter = 0;
     // Main game loop
     while (!WindowShouldClose())  // Detect window close button or ESC key
     {
+        if (itter >= data->size) {
+            itter = 0;
+        }
+
         // Update
         //----------------------------------------------------------------------------------
         UpdateMusicStream(music);  // Update music buffer with new stream
@@ -135,9 +142,16 @@ void *win_main(void *arg) {
         // DrawText("PRESS P TO PAUSE/RESUME", 40, 70, 20, BLACK);
         // DrawText("PRESS UP/DOWN TO CHANGE SPEED", 40, 100, 20, BLACK);
         // DrawText(TextFormat("SPEED: %f", pitch), 40, 130, 20, MAROON);
+        for (size_t i = 0; i < itter; i++) {
+            DrawPixel(data->array[i], i, RED);
+        }
+
         DrawText(TextFormat("FPS: %d", GetFPS()), 40, 150, 20, MAROON);
+        DrawText(TextFormat("data: %lu", data->array[itter]), 40, 200, 20,
+                 MAROON);
 
         EndDrawing();
+        itter++;
         //----------------------------------------------------------------------------------
     }
 

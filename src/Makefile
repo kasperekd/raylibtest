@@ -3,7 +3,7 @@ BUILD_DIR = ../build
 SRC_DIR = .
 INCLUDE_DIR = ../lib/include
 LIB_DIR = ../lib/lib
-LIBS = $(BUILD_DIR)/libmyRay.a
+LIBS = $(BUILD_DIR)/libmyRay.a $(BUILD_DIR)/libmyCalc.a
 
 CFLAGS = -std=c11 -Wall -Wextra -Werror
 IFLAGS = -I$(SRC_DIR)/include -I$(INCLUDE_DIR)
