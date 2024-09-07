@@ -11,9 +11,9 @@ IFLAGS = -I$(INCLUDE_DIR_1) -I$(INCLUDE_DIR_2) -c
 
 ARFLAGS = rcs
 
-SRC = myRay.c
+SRC = myCalc.c
 OBJ = $(patsubst %.c,$(BUILD_DIR)/%.o,$(SRC))
-LIB = $(BUILD_DIR)/libmyRay.a
+LIB = $(BUILD_DIR)/libmyClac.a
 
 all: $(LIB)
 

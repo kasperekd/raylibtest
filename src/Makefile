@@ -5,8 +5,8 @@ INCLUDE_DIR = ../lib/include
 LIB_DIR = ../lib/lib
 LIBS = $(BUILD_DIR)/libmyRay.a
 
-CFLAGS = -I$(SRC_DIR)/include -I$(INCLUDE_DIR)
-
+CFLAGS = -std=c11 -Wall -Wextra -Werror
+IFLAGS = -I$(SRC_DIR)/include -I$(INCLUDE_DIR)
 LDFLAGS = -L$(LIB_DIR) -L$(BUILD_DIR) -Wl,-rpath=./lib/lib -Wl,-rpath=$(BUILD_DIR) -lmyRay -lraylib -lm -lpthread -ldl -lrt
 
 SRC = main.c
@@ -18,6 +18,6 @@ $(BUILD_DIR)/main: $(OBJ) $(LIBS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 $(BUILD_DIR)/%.o: %.c
-	$(CC) -c $< -o $@ $(CFLAGS)
+	$(CC) $(CFLAGS) -c $< -o $@ $(IFLAGS)
 
 .PHONY: all clean
