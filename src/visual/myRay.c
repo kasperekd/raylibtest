@@ -52,10 +52,8 @@ void *win_main(void *arg) {
     float timePlayed = 0.0f;
     bool pause = false;
 
-    SetTargetFPS(60);  // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
+    SetTargetFPS(60);
     size_t itter = 0;
-    // Main game loop
     while (!WindowShouldClose())  // Detect window close button or ESC key
     {
         if (itter >= data->size) {
@@ -63,18 +61,14 @@ void *win_main(void *arg) {
         }
 
         // Update
-        //----------------------------------------------------------------------------------
-        UpdateMusicStream(music);  // Update music buffer with new stream
-        // data
+        UpdateMusicStream(music);
 
-        // // Restart music playing (stop and play)
         if (IsKeyPressed(KEY_SPACE)) {
             StopMusicStream(music);
             PlayMusicStream(music);
             pause = false;
         }
 
-        // Pause/Resume music playing
         if (IsKeyPressed(KEY_P)) {
             pause = !pause;
 
@@ -91,7 +85,7 @@ void *win_main(void *arg) {
 
         SetMusicPitch(music, pitch);
 
-        // Get timePlayed scaled to bar dimensions
+        // Get timePlayed
         timePlayed = GetMusicTimePlayed(music) / GetMusicTimeLength(music) *
                      (screenWidth - 40);
 
@@ -115,10 +109,6 @@ void *win_main(void *arg) {
         //         circles[i].speed = (float)GetRandomValue(1, 100) / 2000.0f;
         //     }
         // }
-        //----------------------------------------------------------------------------------
-
-        // Draw
-        //----------------------------------------------------------------------------------
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
@@ -128,7 +118,6 @@ void *win_main(void *arg) {
         //                 Fade(circles[i].color, circles[i].alpha));
         // }
 
-        // Draw time bar
         DrawRectangle(20, screenHeight - 20 - 12, screenWidth - 40, 12,
                       LIGHTGRAY);
         DrawRectangle(20, screenHeight - 20 - 12, (int)timePlayed, 12, MAROON);
@@ -142,26 +131,32 @@ void *win_main(void *arg) {
         // DrawText("PRESS P TO PAUSE/RESUME", 40, 70, 20, BLACK);
         // DrawText("PRESS UP/DOWN TO CHANGE SPEED", 40, 100, 20, BLACK);
         // DrawText(TextFormat("SPEED: %f", pitch), 40, 130, 20, MAROON);
+        size_t prev_x = 0;
+        double prev_y = 0;
         for (size_t i = 0; i < itter; i++) {
-            DrawPixel(data->array[i], i, RED);
+            // DrawPixel(data->array[i], i, RED);
+            // DrawLine((size_t)prev_x, prev_y, (size_t)data->array[i], i, RED);
+            DrawLine(prev_x, 150 + prev_y, i, 150 + (size_t)data->array[i],
+                     RED);
+            prev_x = i;
+            prev_y = data->array[i];
         }
 
         DrawText(TextFormat("FPS: %d", GetFPS()), 40, 150, 20, MAROON);
-        DrawText(TextFormat("data: %lu", data->array[itter]), 40, 200, 20,
+        // DrawText(TextFormat("data: %lu", data->array[799]), 40, 200, 20,
+        //          MAROON);
+        DrawText(TextFormat("data: %f", data->array[itter]), 40, 200, 20,
                  MAROON);
 
         EndDrawing();
         itter++;
-        //----------------------------------------------------------------------------------
     }
 
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
-    UnloadMusicStream(music);  // Unload music stream buffers from RAM
+    // De-Initi
+    UnloadMusicStream(music);
 
-    CloseAudioDevice();  // Close audio device (music streaming is
-    // automatically stopped)
+    CloseAudioDevice();
 
-    CloseWindow();  // Close window and OpenGL context
+    CloseWindow();
     return NULL;
 }

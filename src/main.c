@@ -8,7 +8,8 @@ int main(void) {
     ThreadData data;
     data.size = 800;
     // TODO Обработать исключения
-    data.array = (size_t *)malloc(sizeof(size_t) * data.size);
+    // data.array = (size_t *)malloc(sizeof(size_t) * data.size);
+    data.array = (double *)malloc(sizeof(double) * data.size);
 
     pthread_create(&visual, NULL, win_main, &data);  // Отрисовка
     pthread_create(&calc, NULL, calc_main, &data);   // Вычисления

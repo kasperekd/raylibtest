@@ -6,7 +6,8 @@
 #include <unistd.h>
 
 typedef struct {
-    size_t *array;
+    // size_t *array;
+    double *array;
     size_t size;
 } ThreadData;
 
