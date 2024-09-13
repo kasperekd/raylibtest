@@ -5,8 +5,14 @@
 int main(void) {
     pthread_t visual, calc;
 
+    WinData window;
+    window.height = 600;
+    window.width = 800;
+
     ThreadData data;
-    data.size = 800;
+    data.window = window;
+    data.size = data.window.width;
+
     // TODO Обработать исключения
     // data.array = (size_t *)malloc(sizeof(size_t) * data.size);
     data.array = (double *)malloc(sizeof(double) * data.size);

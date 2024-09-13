@@ -5,8 +5,8 @@
 void *win_main(void *arg) {
     ThreadData *data = (ThreadData *)arg;
 
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenWidth = data->window.width;
+    const int screenHeight = data->window.height;
 
     // SetConfigFlags(FLAG_MSAA_4X_HINT);  // NOTE: MSAA 4X
 

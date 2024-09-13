@@ -6,9 +6,15 @@
 #include <unistd.h>
 
 typedef struct {
-    // size_t *array;
-    double *array;
+    size_t width;
+    size_t height;
+} WinData;
+
+typedef struct {
+    WinData window;
+    //------------//
     size_t size;
+    double *array;
 } ThreadData;
 
 #endif  // !COMMON_H
