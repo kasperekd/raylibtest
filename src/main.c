@@ -3,7 +3,8 @@
 #include "myRay.h"
 
 int main(void) {
-    pthread_t visual, calc;
+    pthread_t visual;
+    pthread_t calc;
 
     WinData window;
     window.height = 600;

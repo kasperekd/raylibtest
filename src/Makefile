@@ -5,7 +5,7 @@ INCLUDE_DIR = ../lib/include
 LIB_DIR = ../lib/lib
 LIBS = $(BUILD_DIR)/libmyRay.a $(BUILD_DIR)/libmyCalc.a
 
-CFLAGS = -std=c11 -Wall -Wextra -Werror
+CFLAGS = -std=c11 -Wall -Wextra -Werror -O3
 IFLAGS = -I$(SRC_DIR)/include -I$(INCLUDE_DIR)
 LDFLAGS = -L$(LIB_DIR) -L$(BUILD_DIR) -Wl,-rpath=./lib/lib -Wl,-rpath=$(BUILD_DIR) -lmyRay -lraylib -lm -lpthread -ldl -lrt
 

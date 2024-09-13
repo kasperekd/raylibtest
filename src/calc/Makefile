@@ -6,7 +6,8 @@ SRC_DIR = .
 INCLUDE_DIR_1 = ../../lib/include
 INCLUDE_DIR_2 = ../include
 
-CFLAGS = -std=c11 -Wall -Wextra -Werror
+# CFLAGS = -std=c11 -Wall -Wextra
+CFLAGS = -std=c11 -Wall -Wextra -Werror -O3
 IFLAGS = -I$(INCLUDE_DIR_1) -I$(INCLUDE_DIR_2) -c
 
 ARFLAGS = rcs

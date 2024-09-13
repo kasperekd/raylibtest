@@ -6,11 +6,11 @@
 // окна
 #define PI 3.14159265358979323846
 void *calc_main(void *arg) {
+    // sleep(10);
     ThreadData *data = (ThreadData *)arg;
     for (size_t i = 0; i < data->size; i++) {
         double t = i;
-        data->array[i] = (double)(100 * sin(2 * PI * 0.01 * t + (PI)));
-        sleep(1);
+        data->array[i] = (double)(30 * sin(2 * PI * 0.25 * t + (PI)));
     }
     return NULL;
 }
