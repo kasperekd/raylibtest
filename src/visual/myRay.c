@@ -37,7 +37,9 @@ void DrawGraph(ThreadData *data, double scale, Vector2 offset) {
 
     // График
     for (size_t i = 0;
-         i < data->window.width / scale + (int)fabs(offset.x) / scale; i++) {
+         (i < data->window.width / scale + (int)fabs(offset.x) / scale) &&
+         (i < data->graph.size);
+         i++) {
         int x = (int)(i * scale) + (int)offset.x;
         int y = (int)(offset.y + (data->window.height / 2) -
                       (data->graph.array[i] / amplitude) *

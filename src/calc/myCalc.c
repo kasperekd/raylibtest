@@ -10,7 +10,7 @@ void *calc_main(void *arg) {
     for (size_t i = 0; i < data->graph.size; i++) {
         // double t = data->graph.step * i;
         double t = (double)i / data->graph.step;
-        data->graph.array[i] = (double)(3 * cos(2 * PI * 12 * t + (PI / 2)));
+        data->graph.array[i] = (double)(3 * cos(2 * PI * 12 * t + (PI / 8)));
     }
     return NULL;
 }
