@@ -6,11 +6,11 @@
 // окна
 #define PI 3.14159265358979323846
 void *calc_main(void *arg) {
-    // sleep(10);
     ThreadData *data = (ThreadData *)arg;
-    for (size_t i = 0; i < data->size; i++) {
-        double t = i;
-        data->array[i] = (double)(30 * sin(2 * PI * 0.25 * t + (PI)));
+    for (size_t i = 0; i < data->graph.size; i++) {
+        // double t = data->graph.step * i;
+        double t = (double)i / data->graph.step;
+        data->graph.array[i] = (double)(3 * cos(2 * PI * 12 * t + (PI / 2)));
     }
     return NULL;
 }

@@ -12,11 +12,14 @@ int main(void) {
 
     ThreadData data;
     data.window = window;
-    data.size = data.window.width;
+    // data.graph.size = data.window.width;
+    data.graph.step = 1000.0;
+    data.graph.size = window.width * data.graph.step;
+    // data.graph.step = 0.01;
 
     // TODO Обработать исключения
     // data.array = (size_t *)malloc(sizeof(size_t) * data.size);
-    data.array = (double *)malloc(sizeof(double) * data.size);
+    data.graph.array = (double *)malloc(sizeof(double) * data.graph.size);
 
     pthread_create(&visual, NULL, win_main, &data);  // Отрисовка
     pthread_create(&calc, NULL, calc_main, &data);   // Вычисления
@@ -24,6 +27,6 @@ int main(void) {
     pthread_join(visual, NULL);  // Отрисовка
     pthread_join(calc, NULL);    // Вычисления
 
-    free(data.array);
+    free(data.graph.array);
     return 0;
 }
