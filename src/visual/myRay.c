@@ -3,7 +3,6 @@
 #include "common.h"
 
 void DrawAxes(ThreadData *data, double scale, Vector2 offset) {
-    const double amplitude = 3.0;  // TODO: нужно будет получать его из функции
     int axisX_start = (int)offset.x;
     int axisX_end = data->window.width;
     int axisY = (int)(offset.y + (data->window.height / 2));
@@ -22,16 +21,16 @@ void DrawAxes(ThreadData *data, double scale, Vector2 offset) {
     }
 
     // Метки на оси Y
-    for (int j = -amplitude; j <= amplitude; j += 1) {
-        int y = (int)(axisY -
-                      j * (scale * (data->window.height / (2 * amplitude))));
+    for (int j = -data->graph.wave.amplitude; j <= data->graph.wave.amplitude;
+         j += 1) {
+        int y = (int)(axisY - j * (scale * (data->window.height /
+                                            (2 * data->graph.wave.amplitude))));
         DrawText(TextFormat("%d", j), axisX_start + 5, y, 10, BLACK);
         DrawLine(axisX_start - 5, y, axisX_start + 5, y, BLACK);
     }
 }
 
 void DrawGraph(ThreadData *data, double scale, Vector2 offset) {
-    const double amplitude = 3.0;  // TODO: нужно будет получать его из функции
     size_t prev_x = 0;
     double prev_y = 0;
 
@@ -42,7 +41,7 @@ void DrawGraph(ThreadData *data, double scale, Vector2 offset) {
          i++) {
         int x = (int)(i * scale) + (int)offset.x;
         int y = (int)(offset.y + (data->window.height / 2) -
-                      (data->graph.array[i] / amplitude) *
+                      (data->graph.array[i] / data->graph.wave.amplitude) *
                           (scale * (data->window.height / 2)));
 
         if (i > 0) {
@@ -154,8 +153,7 @@ void *win_main(void *arg) {
                          10, 20, BLACK);
                 DrawText(TextFormat("Y: %.2f", index / data->graph.step), 150,
                          10, 20, BLACK);
-                DrawText(TextFormat("Scale: %.2f", offset.x), 10, 25, 20,
-                         BLACK);
+                DrawText(TextFormat("Scale: %.2f", scale), 10, 30, 20, BLACK);
             }
         }
         //---------------------------------------------------------------------

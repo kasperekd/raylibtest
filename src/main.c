@@ -16,7 +16,9 @@ int main(void) {
     data.graph.step = 1000.0;
     data.graph.size = window.width * data.graph.step;
     // data.graph.step = 0.01;
-
+    data.graph.wave.amplitude = 6.0;
+    data.graph.wave.f = 9.0;
+    data.graph.wave.phi = (double)(PI / 5);
     // TODO Обработать исключения
     // data.array = (size_t *)malloc(sizeof(size_t) * data.size);
     data.graph.array = (double *)malloc(sizeof(double) * data.graph.size);

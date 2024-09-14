@@ -10,7 +10,14 @@ typedef struct WinData {
     size_t height;
 } WinData;
 
+typedef struct WaveData {
+    double amplitude;
+    double f;
+    double phi;
+} WaveData;
+
 typedef struct GraphData {
+    WaveData wave;
     size_t size;
     double step;  // на еденицу X
     double *array;
