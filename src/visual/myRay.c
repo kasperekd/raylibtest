@@ -30,7 +30,7 @@ void DrawAxes(ThreadData *data, double scale, Vector2 offset) {
     }
 }
 
-void DrawGraph(ThreadData *data, double scale, Vector2 offset) {
+void DrawGraph(ThreadData *data, Color _color, double scale, Vector2 offset) {
     size_t prev_x = 0;
     double prev_y = 0;
 
@@ -45,7 +45,7 @@ void DrawGraph(ThreadData *data, double scale, Vector2 offset) {
                           (scale * (data->window.height / 2)));
 
         if (i > 0) {
-            DrawLine(prev_x, prev_y, x, y, RED);
+            DrawLine(prev_x, prev_y, x, y, _color);
         }
 
         prev_x = x;
@@ -63,16 +63,16 @@ void *win_main(void *arg) {
 
     InitWindow(screenWidth, screenHeight, "raylib");
 
-    InitAudioDevice();  // Initialize audio device
+    // InitAudioDevice();  // Initialize audio device
 
-    Music music = LoadMusicStream("resources/music.wav");
-    music.looping = false;
-    float pitch = 1.0f;
+    // Music music = LoadMusicStream("resources/music.wav");
+    // music.looping = false;
+    // float pitch = 1.0f;
 
-    PlayMusicStream(music);
+    // PlayMusicStream(music);
 
-    float timePlayed = 0.0f;
-    bool pause = false;
+    // float timePlayed = 0.0f;
+    // bool pause = false;
 
     SetTargetFPS(60);
     size_t itter = 0;
@@ -85,7 +85,7 @@ void *win_main(void *arg) {
         }
 
         // Update
-        UpdateMusicStream(music);
+        // UpdateMusicStream(music);
 
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             Vector2 mouseDelta = GetMouseDelta();
@@ -103,44 +103,45 @@ void *win_main(void *arg) {
             scale = floor(scale * 100) / 100;
         }
 
-        if (IsKeyPressed(KEY_SPACE)) {
-            StopMusicStream(music);
-            PlayMusicStream(music);
-            pause = false;
-        }
+        // if (IsKeyPressed(KEY_SPACE)) {
+        //     StopMusicStream(music);
+        //     PlayMusicStream(music);
+        //     pause = false;
+        // }
 
-        if (IsKeyPressed(KEY_P)) {
-            pause = !pause;
+        // if (IsKeyPressed(KEY_P)) {
+        //     pause = !pause;
 
-            if (pause)
-                PauseMusicStream(music);
-            else
-                ResumeMusicStream(music);
-        }
+        //     if (pause)
+        //         PauseMusicStream(music);
+        //     else
+        //         ResumeMusicStream(music);
+        // }
 
-        if (IsKeyDown(KEY_DOWN))
-            pitch -= 0.01f;
-        else if (IsKeyDown(KEY_UP))
-            pitch += 0.01f;
+        // if (IsKeyDown(KEY_DOWN))
+        //     pitch -= 0.01f;
+        // else if (IsKeyDown(KEY_UP))
+        //     pitch += 0.01f;
 
-        SetMusicPitch(music, pitch);
+        // SetMusicPitch(music, pitch);
 
         // Get timePlayed
-        timePlayed = GetMusicTimePlayed(music) / GetMusicTimeLength(music) *
-                     (screenWidth - 40);
+        // timePlayed = GetMusicTimePlayed(music) / GetMusicTimeLength(music) *
+        //              (screenWidth - 40);
         BeginDrawing();
         //---------------------------------------------------------------------
         ClearBackground(RAYWHITE);
 
-        DrawRectangle(20, screenHeight - 20 - 12, screenWidth - 40, 12,
-                      LIGHTGRAY);
-        DrawRectangle(20, screenHeight - 20 - 12, (int)timePlayed, 12, MAROON);
-        DrawRectangleLines(20, screenHeight - 20 - 12, screenWidth - 40, 12,
-                           GRAY);
+        // DrawRectangle(20, screenHeight - 20 - 12, screenWidth - 40, 12,
+        //               LIGHTGRAY);
+        // DrawRectangle(20, screenHeight - 20 - 12, (int)timePlayed, 12,
+        // MAROON); DrawRectangleLines(20, screenHeight - 20 - 12, screenWidth -
+        // 40, 12,
+        //                    GRAY);
 
         // Отрисовка оси и графика
         DrawAxes(data, scale, offset);
-        DrawGraph(data, scale, offset);
+        DrawGraph(data, RED, scale, offset);
         // DrawGraph(data->array, data->size);
 
         DrawText(TextFormat("FPS: %d", GetFPS()), 40, 150, 20, MAROON);
@@ -149,9 +150,9 @@ void *win_main(void *arg) {
         if (mousePos.x >= 0 && mousePos.x < data->window.width) {
             size_t index = (size_t)((mousePos.x - offset.x) / scale);
             if (index < data->graph.size) {
-                DrawText(TextFormat("X: %.2f", data->graph.array[index]), 10,
+                DrawText(TextFormat("X: %.3f", index / data->graph.step), 10,
                          10, 20, BLACK);
-                DrawText(TextFormat("Y: %.2f", index / data->graph.step), 150,
+                DrawText(TextFormat("Y: %.3f", data->graph.array[index]), 150,
                          10, 20, BLACK);
                 DrawText(TextFormat("Scale: %.2f", scale), 10, 30, 20, BLACK);
             }
@@ -162,9 +163,9 @@ void *win_main(void *arg) {
     }
 
     // De-Initi
-    UnloadMusicStream(music);
+    // UnloadMusicStream(music);
 
-    CloseAudioDevice();
+    // CloseAudioDevice();
 
     CloseWindow();
     return NULL;

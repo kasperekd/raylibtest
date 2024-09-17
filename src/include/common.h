@@ -16,6 +16,8 @@ typedef struct WaveData {
     double phi;
 } WaveData;
 
+// TODO: Добавить поле флагов по типу is_ready для возможности получения сигнала
+// о готовности данных без использования сторонней синхронизации
 typedef struct GraphData {
     WaveData wave;
     size_t size;

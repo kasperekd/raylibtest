@@ -9,7 +9,7 @@
 void *calc_main(void *arg) {
     ThreadData *data = (ThreadData *)arg;
     for (size_t i = 0; i < data->graph.size; i++) {
-        // double t = data->graph.step * i;
+        // double t = (double)i / 10000;
         double t = (double)i / data->graph.step;
         data->graph.array[i] = (double)(data->graph.wave.amplitude *
                                         sin(2 * PI * data->graph.wave.f * t +
