@@ -50,8 +50,8 @@ int main(void) {
     data->graph[0].wave.f = 9.0;
     data->graph[0].wave.phi = (double)(PI / 5);
 
-    data->graph[1].wave.amplitude = 1;
-    data->graph[1].wave.f = 20.0;
+    data->graph[1].wave.amplitude = 6;
+    data->graph[1].wave.f = 18.0;
     data->graph[1].wave.phi = (double)(PI);
 
     // Выделяем память для массивов array

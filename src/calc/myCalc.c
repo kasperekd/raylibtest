@@ -17,12 +17,9 @@ void *calc_main(void *arg) {
                          data->graph[0].wave.phi));
     }
 
-    for (size_t i = 0; i < data->graph[1].size; i++) {
-        double t = (double)i / data->graph[1].step;
-        data->graph[1].array[i] =
-            (double)(data->graph[1].wave.amplitude *
-                     sin(2 * PI * data->graph[1].wave.f * t +
-                         data->graph[1].wave.phi));
+    size_t sample_rate = data->graph[1].size / data->graph[1].wave.f;
+    for (size_t i = 0; i < data->graph[1].size; i += sample_rate) {
+        data->graph[1].array[i] = data->graph[0].array[i];
     }
 
     return NULL;
