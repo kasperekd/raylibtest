@@ -8,12 +8,22 @@
 // окна
 void *calc_main(void *arg) {
     ThreadData *data = (ThreadData *)arg;
-    for (size_t i = 0; i < data->graph.size; i++) {
-        // double t = (double)i / 10000;
-        double t = (double)i / data->graph.step;
-        data->graph.array[i] = (double)(data->graph.wave.amplitude *
-                                        sin(2 * PI * data->graph.wave.f * t +
-                                            data->graph.wave.phi));
+    // TODO: Убрать хардкод индексов ареев
+    for (size_t i = 0; i < data->graph[0].size; i++) {
+        double t = (double)i / data->graph[0].step;
+        data->graph[0].array[i] =
+            (double)(data->graph[0].wave.amplitude *
+                     sin(2 * PI * data->graph[0].wave.f * t +
+                         data->graph[0].wave.phi));
     }
+
+    for (size_t i = 0; i < data->graph[1].size; i++) {
+        double t = (double)i / data->graph[1].step;
+        data->graph[1].array[i] =
+            (double)(data->graph[1].wave.amplitude *
+                     sin(2 * PI * data->graph[1].wave.f * t +
+                         data->graph[1].wave.phi));
+    }
+
     return NULL;
 }

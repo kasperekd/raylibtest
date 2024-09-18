@@ -17,7 +17,8 @@ typedef struct WaveData {
 } WaveData;
 
 // TODO: Добавить поле флагов по типу is_ready для возможности получения сигнала
-// о готовности данных без использования сторонней синхронизации
+// о готовности данных без использования сторонней синхронизации.
+// TODO: Поддержка унифицированных параметров для графиков.
 typedef struct GraphData {
     WaveData wave;
     size_t size;
@@ -28,7 +29,8 @@ typedef struct GraphData {
 typedef struct ThreadData {
     WinData window;
     //------------//
-    GraphData graph;  // При необходимости можно завести в массив
+    size_t num_of_graph;
+    GraphData *graph;  // При необходимости можно завести в массив
 } ThreadData;
 
 #endif  // !COMMON_H
