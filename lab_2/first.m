@@ -20,6 +20,12 @@ area_total_km2 = 100;
 area_business_centers_km2 = 4;
 feeder_loss_db = 2;
 
+A = 46.3;
+B = 33.9;
+
+h_BS = 50; % Высота базовой станции
+h_MS = 3; % Высота мобильной станции
+
 r_umi = 500; % m
 r_walf = 5000; % m
 
@@ -61,10 +67,27 @@ path_loss_fspl = 20 * log10((4 * pi * frequency_hz * distances) / C);
 path_loss_cost = zeros(size(distances));
 for i = 1:length(distances)
     distance_km = distances(i) * 10^-3;
-    path_loss_cost(i) = 46.3 + 33.9 * log10(frequency_ghz * 10^3) - 13.82 * log10(50) - ...
-        (3.2 * (log10(11.75 * 1))^2 - 4.97) + ...
-        (44.9 - 6.55 * log10(frequency_ghz * 10^3)) * log10(distance_km) + 3;
+    a_hms = 3.2 * (log10(11.75 * h_MS))^2 - 4.97;
+    
+    if distance_km >= 1
+        s = 44.9 - 6.55 * log10(frequency_ghz * 10^3);
+    else
+        s = (47.88 + 13.9 * log10(frequency_ghz * 10^3) - 13.9 * log10(h_BS)) * (1 / log10(50));
+    end
+    
+    L_clutter = 3;
+    
+    path_loss_cost(i) = A + B * log10(frequency_ghz * 10^3) - 13.82 * log10(h_BS) - a_hms + s * log10(distance_km) + L_clutter;
 end
+% % Построение графика COST 231
+% distances_m = (1:end_d);
+% path_loss_cost = zeros(size(distances_m));
+% for i = 1:length(distances_m)
+%     distance_km = distances_m(i) * 10^-3;
+%     path_loss_cost(i) = 46.3 + 33.9 * log10(frequency_ghz * 10^3) - 13.82 * log10(50) - ...
+%         (3.2 * (log10(11.75 * 1))^2 - 4.97) + ...
+%         (44.9 - 6.55 * log10(frequency_ghz * 10^3)) * log10(distance_km) + 3;
+% end
 
 % Построение графика UMiNLOS
 figure(1);
@@ -80,16 +103,7 @@ legend;
 grid on;
 hold off;
 
-% Построение графика COST 231
 distances_m = (1:end_d);
-path_loss_cost = zeros(size(distances_m));
-for i = 1:length(distances_m)
-    distance_km = distances_m(i) * 10^-3;
-    path_loss_cost(i) = 46.3 + 33.9 * log10(frequency_ghz * 10^3) - 13.82 * log10(50) - ...
-        (3.2 * (log10(11.75 * 1))^2 - 4.97) + ...
-        (44.9 - 6.55 * log10(frequency_ghz * 10^3)) * log10(distance_km) + 3;
-end
-
 figure(2);
 plot(distances_m, path_loss_cost, 'DisplayName', 'COST 231');
 hold on;
@@ -102,15 +116,7 @@ legend;
 grid on;
 hold off;
 
-% Построение всех моделей
 path_loss_walfish = 42.6 + 20 * log10(frequency_ghz * 10^3) + 26 * log10(distances / 1000);
-path_loss_cost = zeros(size(distances));
-for i = 1:length(distances)
-    distance_km = distances(i) * 10^-3;
-    path_loss_cost(i) = 46.3 + 33.9 * log10(frequency_ghz * 10^3) - 13.82 * log10(50) - ...
-        (3.2 * (log10(11.75 * 1))^2 - 4.97) + ...
-        (44.9 - 6.55 * log10(frequency_ghz * 10^3)) * log10(distance_km) + 3;
-end
 
 figure(3);
 plot(distances, path_loss_cost, 'DisplayName', 'COST 231');
