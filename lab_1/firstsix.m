@@ -21,7 +21,6 @@ P1(2:end-1) = 2*P1(2:end-1); % Учет амплитуды
 
 f = Fs*(0:floor(N/2))/N; % Вектор частот
 
-% Находим максимальную частоту
 [max_amplitude, max_index] = max(P1);
 max_freq = round(f(max_index)); % Максимальная частота
 % max_freq = f;
