@@ -1,8 +1,8 @@
 clear;
 % Шаг 1: Генерация и визуализация непрерывного сигнала
-f = 9; % Частота
+% f = 9; % Частота
 t = 0:0.0000001:1;
-y = 6 * sin(2 * pi * f * t + pi/5);
+y = 6 * sin(2 * pi * 9 * t + pi/5);
 
 figure;
 plot(t, y);
@@ -23,7 +23,7 @@ f = Fs*(0:floor(N/2))/N; % Вектор частот
 
 % Находим максимальную частоту
 [max_amplitude, max_index] = max(P1);
-max_freq = f(max_index); % Максимальная частота
+max_freq = round(f(max_index)); % Максимальная частота
 % max_freq = f;
 
 disp(['Максимальная частота в спектре: ', num2str(max_freq), ' Гц']);
@@ -37,12 +37,12 @@ fs = fs_min;
 t_sampled = 0:1/fs:1;
 y_sampled = max_amplitude * sin(2 * pi * max_freq * t_sampled + pi/5); % Оцифрованный сигнал
 
-
+clear Y N;
 % Шаг 5: Прямое дискретное преобразование Фурье
 Y = fft(y_sampled); % Дискретное преобразование Фурье
 N = length(y_sampled); % Количество
 f_axis = (0:N-1)*(fs/N);
-Y_magnitude = abs(Y)/N;
+Y_magnitude = abs(Y)/N; % Нормализация амплитуды
 
 figure;
 plot(f_axis, Y_magnitude);
@@ -54,7 +54,7 @@ grid on;
 
 % Ширина спектра
 spectrum_width = max(f_axis) - min(f_axis);
-disp(['Ширина спектра: ', num2str(spectrum_width), ' Гц']);
+disp(['Ширина спектра: ', num2str(spectrum_width), ' Гц'])
 
 % Объем памяти для хранения массива
 memory_size = N * 8; % Предполагаем, что используем double (8 байт)
