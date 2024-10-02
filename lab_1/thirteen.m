@@ -1,8 +1,8 @@
 % Параметры сигнала
 frequency = 9; % Частота
-time_vector = 0:0.0001:1; % Временной вектор
+sampling_rate = 1000; % Частота дискретизации
+time_vector = 0:1/sampling_rate:1; % Временной вектор
 signal = 6 * sin(2 * pi * frequency * time_vector + pi/5); % Генерация сигнала
-sampling_rate = 8000; % Частота дискретизации
 
 % Разрядности для анализа
 bit_depths = [3, 4, 5, 6];

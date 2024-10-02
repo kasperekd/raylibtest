@@ -29,7 +29,7 @@ h_MS = 3; % Высота мобильной станции
 r_umi = 500; % m
 r_walf = 5000; % m
 
-end_d = 7000;
+end_d = 20000;
 
 % Вычисляемые параметры
 frequency_hz = frequency_ghz * 10^9;
