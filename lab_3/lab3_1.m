@@ -1,35 +1,40 @@
-% Параметры
+clear;
+
 f1 = 13;
 f2 = 17;
 f3 = 27;
-t = 0:0.01:1; % Временная ось
+t = 0:0.01:1;
 
-% Определение сигналов
 s1 = cos(2 * pi * f1 * t);
 s2 = cos(2 * pi * f2 * t);
 s3 = cos(2 * pi * f3 * t);
 
-% Определение сигналов a(t) и b(t)
+% a(t) и b(t)
 a_signal = 5 * s1 + 4 * s2 + s3;
 b_signal = s1 + (1/3) * s2;
 
-% Вычисление корреляции между s1 и a, s1 и b
-correlation_s1_a = corr(s1', a_signal');
-correlation_s1_b = corr(s1', b_signal');
+% между s1 и a, s1 и b
+% correlation_s1_a = corr(s1', a_signal');
+% correlation_s1_b = corr(s1', b_signal');
+% correlation_s1_b = max(xcorr(s1, b_signal));
+correlation_s1_a = sum(s1 .* a_signal);
+correlation_s1_b = sum(s1 .* b_signal);
 
-% Нормализованная корреляция
-norm_correlation_s1_a = max(xcorr(s1, a_signal)) / (norm(s1) * norm(a_signal));
-norm_correlation_s1_b = max(xcorr(s1, b_signal)) / (norm(s1) * norm(b_signal));
+% Нормал.
+norm_correlation_s1_a = correlation_s1_a / (norm(s1) * norm(a_signal));
+norm_correlation_s1_b = correlation_s1_b / (norm(s1) * norm(b_signal));
 
-% Вывод результатов корреляции
 disp(['Корреляция между s1 и a: ', num2str(correlation_s1_a)]);
 disp(['Корреляция между s1 и b: ', num2str(correlation_s1_b)]);
 disp(['Нормализованная корреляция между s1 и a: ', num2str(norm_correlation_s1_a)]);
 disp(['Нормализованная корреляция между s1 и b: ', num2str(norm_correlation_s1_b)]);
 
-% Заданные последовательности
+%%%%%%%%%%%
 a = [0.3, 0.2, -0.1, 4.2, -2, 1.5, 0];
 b = [0.3, 4, -2.2, 1.6, 0.1, 0.1, 0.2];
+corr_ab = sum(a .* b);
+
+disp(['Взаимная корреляция ', num2str(corr_ab)]);
 
 % Взаимная корреляция со сдвигом
 N = length(a);
@@ -48,19 +53,18 @@ for shift = 0:N - 1
 
 end
 
-% Вывод оптимального сдвига
-disp(['Оптимальный сдвиг для максимальной корреляции: ', num2str(optimal_shift)]);
+disp(['Оптимальный сдвиг: ', num2str(optimal_shift)]);
 
-% Построение графика корреляции
+%%%%%%%%%%%%%%
 figure(1);
 subplot(2, 1, 1);
-stem(a);
+plot(a);
 title('Сигнал a');
 xlabel('Номер отсчета');
 ylabel('Значение');
 
 subplot(2, 1, 2);
-stem(b);
+plot(b);
 title('Сигнал b');
 xlabel('Номер отсчета');
 ylabel('Значение');
@@ -71,7 +75,6 @@ title('Зависимость корреляции от сдвига');
 xlabel('Сдвиг');
 ylabel('Значение корреляции');
 
-% Построение графиков a и b с оптимальным сдвигом
 figure(3);
 subplot(2, 1, 1);
 plot(a);
