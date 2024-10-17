@@ -32,6 +32,7 @@
 - Базовые станции с фидерами
 
 ### Результаты
+![изображение](https://github.com/user-attachments/assets/4eff1455-45eb-412f-9508-a686a459ccc2)
 ![изображение](https://github.com/user-attachments/assets/dd3d135e-2c1b-4d06-8777-0fefa63a79b8)
 ![изображение](https://github.com/user-attachments/assets/fd1ed445-31f9-43f6-98c3-d7f9a0ed602f)
 
