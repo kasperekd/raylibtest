@@ -1,5 +1,5 @@
 CXX = gcc
-CXXFLAGS = -Wall -Wextra -Werror -Wno-unused-parameter -std=c23
+CXXFLAGS = -Wall -Wextra -Werror -Wno-unused-parameter -std=c23 -msse4.2
 
 TARGET = build/main
 SRCS = main.c
