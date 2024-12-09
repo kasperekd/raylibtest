@@ -20,13 +20,16 @@ file(GLOB_RECURSE VISUALIZATION_SRC ${SRC_DIR}/Visualization/*.cpp)
 
 set(MAIN_SRC ${SRC_DIR}/main.cpp)
 
-add_executable(${PROJECT_NAME} \
-    ${MAIN_SRC} \
-    ${BIT_SEQUENCE_SRC} \
-    ${SIGNAL_PROCESSING_SRC} \
-    ${SIGNAL_ANALYSIS_SRC} \
-    ${UTILITIES_SRC} \
-    ${VISUALIZATION_SRC})
+file(GLOB_RECURSE MODULE_SRC
+    ${SRC_DIR}/BitSequence/*.cpp
+    ${SRC_DIR}/SignalProcessing/*.cpp
+    ${SRC_DIR}/SignalAnalysis/*.cpp
+    ${SRC_DIR}/Utilities/*.cpp
+    ${SRC_DIR}/Visualization/*.cpp)
+
+add_executable(${PROJECT_NAME} ${MAIN_SRC})
+
+target_sources(${PROJECT_NAME} PRIVATE ${MODULE_SRC})
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory

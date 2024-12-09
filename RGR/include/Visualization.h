@@ -6,6 +6,7 @@
 #include "common.h"
 
 namespace Visualization {
+void printBitSequence(const BitSequence& data);
 void prepareVisualizationFile(const std::string& filePath, const Signal& data,
                               const std::string& plotType,
                               const std::string& title,

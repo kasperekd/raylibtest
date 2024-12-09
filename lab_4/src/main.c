@@ -35,8 +35,8 @@ void lfsr_sequence(uint8_t seq[], uint8_t start) {
 
 void gold_sequence(const uint8_t x_seq[], const uint8_t y_seq[],
                    uint8_t gold_seq[]) {
-    int taps_x[] = {0, 2};
-    int taps_y[] = {0, 1, 2, 4};
+    int taps_x[] = {0, 2, 1};
+    int taps_y[] = {0, 3, 2, 4};
     int num_taps_x = sizeof(taps_x) / sizeof(taps_x[0]);
     int num_taps_y = sizeof(taps_y) / sizeof(taps_y[0]);
 
