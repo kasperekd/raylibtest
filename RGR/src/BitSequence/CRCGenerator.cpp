@@ -1,30 +1,57 @@
 #include "BitSequence.h"
 
 namespace BitSequenceModule {
-BitSequence generateCRC(const BitSequence& data, int crcLength) {
+u_int32_t generateCRC(const BitSequence& data, CRCType crcType,
+                      size_t crcLength) {
     if (crcLength <= 0) {
         throw std::invalid_argument(
             "The CRC length must be a positive number.");
     }
 
-    BitSequence crc(crcLength, 0);
+    u_int32_t crc = 0;
     BitSequence augmentedData = data;
-    augmentedData.insert(augmentedData.end(), crc.begin(), crc.end());
 
-    // для CRC-16-CCITT
-    const unsigned int polynomial = 0x1021;
+    switch (crcType) {
+        case CRCType::CRC16: {
+            const u_int16_t polynomial = 0xA001;  // Полином для CRC-16
+            crc = 0;  // Инициализация CRC
+            augmentedData.insert(augmentedData.end(), crcLength, 0);
 
-    for (size_t i = 0; i < data.size(); ++i) {
-        if (augmentedData[i] == 1) {
-            for (int j = 0; j < crcLength; ++j) {
-                augmentedData[i + j] ^= (polynomial >> (crcLength - 1 - j)) & 1;
+            for (size_t i = 0; i < augmentedData.size(); ++i) {
+                crc ^= (augmentedData[i] << 8);  // Обработка каждого байта
+                for (size_t j = 0; j < 8; ++j) {
+                    if (crc & 0x8000) {
+                        crc = (crc << 1) ^ polynomial;
+                    } else {
+                        crc <<= 1;
+                    }
+                }
             }
+            crc &= 0xFFFF;  // Убедимся, что CRC-16 в пределах 16 бит
+            break;
         }
+        case CRCType::CRC32: {
+            const u_int32_t polynomial = 0xEDB88320;  // Полином для CRC-32
+            crc = 0xFFFFFFFF;  // Инициализация CRC
+            augmentedData.insert(augmentedData.end(), crcLength, 0);
+
+            for (size_t i = 0; i < augmentedData.size(); ++i) {
+                crc ^= augmentedData[i];  // Обработка каждого байта
+                for (size_t j = 0; j < 8; ++j) {
+                    if (crc & 1) {
+                        crc = (crc >> 1) ^ polynomial;
+                    } else {
+                        crc >>= 1;
+                    }
+                }
+            }
+            crc ^= 0xFFFFFFFF;  // Финальная инверсия
+            break;
+        }
+        default:
+            throw std::invalid_argument("Unsupported CRC type.");
     }
 
-    for (int i = 0; i < crcLength; ++i) {
-        crc[i] = augmentedData[data.size() + i];
-    }
     return crc;
 }
 }  // namespace BitSequenceModule
