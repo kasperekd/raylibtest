@@ -8,8 +8,6 @@
 namespace SignalProcessing {
 Signal generateWhiteNoise(size_t size, float mu, float sigma);
 Signal extractEveryNthValue(const Signal& inputSignal, size_t N);
-Signal modulateSignal(const BitSequence& bits, size_t samplesPerBit);
-Signal insertSignal(const Signal& original, int position, size_t totalLength);
 std::complex<float> calculateSpectrum(const Signal& signal, int sampleRate);
 
 // templates
