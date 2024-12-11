@@ -1,6 +1,3 @@
-#include <iostream>
-#include <stdexcept>
-
 #include "Visualization.h"
 
 namespace Visualization {

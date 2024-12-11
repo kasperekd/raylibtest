@@ -10,12 +10,13 @@
 
 namespace Utilities {
 std::string readStringFromUser();
+size_t readSize_tFromUser(size_t min = 0,
+                          size_t = std::numeric_limits<size_t>::max());
+double readDoubleFromUser(double min = std::numeric_limits<double>::lowest(),
+                          double max = std::numeric_limits<double>::max());
 BitSequence combineBitSequences(const BitSequence& vec1,
                                 const BitSequence& vec2);
 Signal convertToSignal(const BitSequence& bitSequence);
-void writeToFile(const std::string& filePath, const Signal& data);
-void writeToFile(const std::string& filePath, const BitSequence& data);
-void readFromFile(const std::string& filePath, Signal& data);
 }  // namespace Utilities
 
 #endif  // UTILITIES_H
