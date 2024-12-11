@@ -23,6 +23,7 @@ size_t findSequenceInSignal(const Signal& signal, const BitSequence& sequence,
 
         // std::cout << normalizedCorrelation << " " << correlation << "\n";
         if (normalizedCorrelation > maxCorrelation) {
+            // std::cout << normalizedCorrelation << "\n";
             maxCorrelation = normalizedCorrelation;
             bestMatchIndex = i;
         }

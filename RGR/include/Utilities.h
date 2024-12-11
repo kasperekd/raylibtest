@@ -17,6 +17,13 @@ double readDoubleFromUser(double min = std::numeric_limits<double>::lowest(),
 BitSequence combineBitSequences(const BitSequence& vec1,
                                 const BitSequence& vec2);
 Signal convertToSignal(const BitSequence& bitSequence);
+void insertVector(BitSequence& target, const BitSequence& source,
+                  size_t position);
+void insertVector(Signal& target, const Signal& source, size_t position);
+void removeRange(BitSequence& bits, size_t start, size_t end);
+void removeRange(Signal& bits, size_t start, size_t end);
+BitSequence getRange(const BitSequence& bits, size_t start, size_t end);
+Signal getRange(const Signal& bits, size_t start, size_t end);
 }  // namespace Utilities
 
 #endif  // UTILITIES_H

@@ -15,7 +15,9 @@ enum class CRCType {
     //...
 };
 BitSequence encodeToASCII(const std::string& input);
+std::string decodeFromASCII(const BitSequence& bits);
 BitSequence numberToBitSequence(int32_t number, size_t bitLength);
+int32_t bitSequenceToNumber(const BitSequence& bits);
 u_int32_t generateCRC(const BitSequence& data, CRCType crcType,
                       size_t crcLength);
 BitSequence generateGoldSequence(uint8_t x_start = 0b01101,

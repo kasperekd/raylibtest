@@ -22,4 +22,82 @@ Signal convertToSignal(const BitSequence& bitSequence) {
 
     return signal;
 }
+
+void insertVector(BitSequence& target, const BitSequence& source,
+                  size_t position) {
+    if (position > target.size()) {
+        throw std::out_of_range("Позиция вставки выходит за пределы вектора.");
+    }
+
+    target.insert(target.begin() + position, source.begin(), source.end());
+}
+
+void insertVector(Signal& target, const Signal& source, size_t position) {
+    if (position > target.size()) {
+        throw std::out_of_range("Позиция вставки выходит за пределы вектора.");
+    }
+
+    target.insert(target.begin() + position, source.begin(), source.end());
+}
+
+void removeRange(BitSequence& bits, size_t start, size_t end) {
+    if (start >= bits.size()) {
+        throw std::out_of_range("Начальный индекс выходит за пределы вектора.");
+    }
+    if (end > bits.size()) {
+        end = bits.size();
+    }
+    if (start >= end) {
+        throw std::invalid_argument(
+            "Начальный индекс должен быть меньше конечного индекса.");
+    }
+
+    bits.erase(bits.begin() + start, bits.begin() + end);
+}
+
+void removeRange(Signal& bits, size_t start, size_t end) {
+    if (start >= bits.size()) {
+        throw std::out_of_range("Начальный индекс выходит за пределы вектора.");
+    }
+    if (end > bits.size()) {
+        end = bits.size();
+    }
+    if (start >= end) {
+        throw std::invalid_argument(
+            "Начальный индекс должен быть меньше конечного индекса.");
+    }
+
+    bits.erase(bits.begin() + start, bits.begin() + end);
+}
+
+BitSequence getRange(const BitSequence& bits, size_t start, size_t end) {
+    if (start >= bits.size()) {
+        throw std::out_of_range("Начальный индекс выходит за пределы вектора.");
+    }
+    if (end > bits.size()) {
+        end = bits.size();
+    }
+    if (start >= end) {
+        throw std::invalid_argument(
+            "Начальный индекс должен быть меньше конечного индекса.");
+    }
+
+    return BitSequence(bits.begin() + start, bits.begin() + end);
+}
+
+Signal getRange(const Signal& bits, size_t start, size_t end) {
+    if (start >= bits.size()) {
+        throw std::out_of_range("Начальный индекс выходит за пределы вектора.");
+    }
+    if (end > bits.size()) {
+        end = bits.size();
+    }
+    if (start >= end) {
+        throw std::invalid_argument(
+            "Начальный индекс должен быть меньше конечного индекса.");
+    }
+
+    return Signal(bits.begin() + start, bits.begin() + end);
+}
+
 }  // namespace Utilities

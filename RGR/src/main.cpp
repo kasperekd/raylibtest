@@ -12,6 +12,7 @@
 int main() {
     try {
         std::vector<Visualization::GraphDescription> descriptions = {};
+        std::vector<Visualization::GraphDescription> descriptions_13 = {};
         // 1. Input
         std::cout << "Введите ваше имя и фамилию латиницей: ";
         std::string nameSurname = Utilities::readStringFromUser();
@@ -91,7 +92,7 @@ int main() {
         double sigma = Utilities::readDoubleFromUser(0, 1.0);
         Signal noise = SignalProcessing::generateWhiteNoise(Nx * 2, mu, sigma);
 
-        for (size_t i = 0; (i < signalArray.size()) || (i < noise.size());
+        for (size_t i = 0; (i < signalArray.size()) && (i < noise.size());
              i++) {
             signalArray[i] += noise[i];
         }
@@ -111,14 +112,10 @@ int main() {
         // Signal received =
         //     SignalProcessing::extractEveryNthValue(signalArray, N - 1);
         size_t start_index = SignalAnalysis::findSequenceInSignal(
-            received, gold_oversampled, 0.2);
+            received, gold_oversampled, 0.6);
         std::cout << "start_index: " << start_index << "\n";
 
-        if (start_index <= received.size()) {
-            received.erase(received.begin(), received.begin() + start_index);
-        } else {
-            std::cout << "Индекс выходит за пределы вектора." << std::endl;
-        }
+        Utilities::removeRange(received, 0, start_index);
 
         Visualization::saveGraphData("./data/task8_1.txt", received);
         descriptions.push_back({"./data/task8_1.txt", "plot", "x,y",
@@ -134,23 +131,112 @@ int main() {
                                 "interpreted signal", "Index", "Value", false});
 
         // 10. -sync
-        if (gold.size() <= interpreted.size()) {
-            interpreted.erase(interpreted.begin(),
-                              interpreted.begin() + gold.size());
-        } else {
-            std::cout << "Индекс выходит за пределы вектора." << std::endl;
-        }
+        Utilities::removeRange(interpreted, 0, gold.size());
 
-        // 10,1. get len
+        // 10,1. get len (16 бит на кодирование длины сообщения)
+        BitSequence receivedLen = Utilities::getRange(interpreted, 0, 16);
+        Utilities::removeRange(interpreted, 0, 16);
         size_t messageLengthReceive =
-            SignalAnalysis::getMessageLength(interpreted);
-        std::cout << messageLengthReceive << "\n";
+            SignalAnalysis::getMessageLength(receivedLen);
+        // std::cout << messageLengthReceive << "\n";
 
         // 10,2. get message
+        BitSequence receivedBitMessage =
+            Utilities::getRange(interpreted, 0, messageLengthReceive);
+        Visualization::printBitSequence(receivedBitMessage,
+                                        "Принятое сообщение: ");
 
+        // 10,3. get CRC from message
+        BitSequence receivedBitCRC = Utilities::getRange(
+            interpreted, messageLengthReceive, messageLengthReceive + 16);
+        int32_t receivedCRC =
+            BitSequenceModule::bitSequenceToNumber(receivedBitCRC);
+
+        // 11. calc new CRC
+        u_int32_t newCrc = BitSequenceModule::generateCRC(receivedBitMessage,
+                                                          CRC_TYPE, CRC_LENGTH);
+        if (newCrc == receivedCRC) {
+            // 12. decode
+            std::string receivedMessage =
+                BitSequenceModule::decodeFromASCII(receivedBitMessage);
+            std::cout << "Received message without errors :\n"
+                      << receivedMessage << "\n";
+        } else {
+            std::cout << "Received CRC incorrect: " << std::hex << receivedCRC
+                      << std::dec << "\n";
+        }
+
+        // 13. change
+        BitSequence bitForChange = combinedSeq;
+        Signal signalForChange = Utilities::convertToSignal(bitForChange);
+
+        // TODO: Перенастроить линтер ! Это ужос !
+        Signal shortSignal =
+            SignalProcessing::oversample(signalForChange, N / 2);
+        Signal mediumSignal = SignalProcessing::oversample(signalForChange, N);
+        Signal largeSignal =
+            SignalProcessing::oversample(signalForChange, N * 2);
+
+        Signal shortSignalArray(shortSignal.size() * 2, 0.0f);
+        Signal mediumSignalArray(mediumSignal.size() * 2, 0.0f);
+        Signal largeSignalArray(largeSignal.size() * 2, 0.0f);
+
+        Utilities::insertVector(shortSignalArray, shortSignal, 0);
+        Utilities::insertVector(mediumSignalArray, mediumSignal, 0);
+        Utilities::insertVector(largeSignalArray, largeSignal, 0);
+
+        Visualization::saveGraphData("./data/13/(1,3,1)task13_1_1.txt",
+                                     shortSignalArray);
+        descriptions_13.push_back({"./data/13/(1,3,1)task13_1_1.txt", "plot",
+                                   "x,y", "shortSignal", "Index", "Value",
+                                   false});
+        Visualization::saveGraphData("./data/13/(1,3,2)task13_1_2.txt",
+                                     mediumSignalArray);
+        descriptions_13.push_back({"./data/13/(1,3,2)task13_1_2.txt", "plot",
+                                   "x,y", "mediumSignal", "Index", "Value",
+                                   false});
+        Visualization::saveGraphData("./data/13/(1,3,3)task13_1_3.txt",
+                                     largeSignalArray);
+        descriptions_13.push_back({"./data/13/(1,3,3)task13_1_3.txt", "plot",
+                                   "x,y", "largeSignal", "Index", "Value",
+                                   false});
+
+        noise = SignalProcessing::generateWhiteNoise(largeSignalArray.size(),
+                                                     mu, sigma);
+
+        for (size_t i = 0; (i < shortSignalArray.size()) && (i < noise.size());
+             i++) {
+            shortSignalArray[i] += noise[i];
+        }
+        for (size_t i = 0; (i < mediumSignalArray.size()) && (i < noise.size());
+             i++) {
+            mediumSignalArray[i] += noise[i];
+        }
+        for (size_t i = 0; (i < largeSignalArray.size()) && (i < noise.size());
+             i++) {
+            largeSignalArray[i] += noise[i];
+        }
+
+        Visualization::saveGraphData("./data/13/(2,3,1)task13_2_1.txt",
+                                     shortSignalArray);
+        descriptions_13.push_back({"./data/13/(2,3,1)task13_2_1.txt", "plot",
+                                   "x,y", "shortSignal", "Index", "Value",
+                                   false});
+        Visualization::saveGraphData("./data/13/(2,3,2)task13_2_2.txt",
+                                     mediumSignalArray);
+        descriptions_13.push_back({"./data/13/(2,3,2)task13_2_2.txt", "plot",
+                                   "x,y", "mediumSignal", "Index", "Value",
+                                   false});
+        Visualization::saveGraphData("./data/13/(2,3,3)task13_2_3.txt",
+                                     largeSignalArray);
+        descriptions_13.push_back({"./data/13/(2,3,3)task13_2_3.txt", "plot",
+                                   "x,y", "largeSignal", "Index", "Value",
+                                   false});
         // Сохранение описаний для графиков
         Visualization::saveGraphDescription("./data/descriptions.txt",
                                             descriptions);
+        Visualization::saveGraphDescription("./data/13/descriptions.txt",
+                                            descriptions_13);
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
