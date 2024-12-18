@@ -16,6 +16,36 @@ void saveGraphData(const std::string& filePath,
     file.close();
 }
 
+void saveGraphData(const std::string& filePath,
+                   const std::vector<std::pair<double, int>>& data) {
+    std::ofstream file(filePath);
+    if (!file.is_open()) {
+        throw std::ios_base::failure("|saveGraphData| Failed to open file: " +
+                                     filePath);
+    }
+
+    for (const auto& point : data) {
+        file << point.first << "; " << point.second << "\n";
+    }
+
+    file.close();
+}
+
+void saveGraphData(const std::string& filePath,
+                   const std::vector<std::pair<int, double>>& data) {
+    std::ofstream file(filePath);
+    if (!file.is_open()) {
+        throw std::ios_base::failure("|saveGraphData| Failed to open file: " +
+                                     filePath);
+    }
+
+    for (const auto& point : data) {
+        file << point.first << "; " << point.second << "\n";
+    }
+
+    file.close();
+}
+
 void saveGraphData(const std::string& filePath, const Signal& data) {
     std::ofstream file(filePath);
     if (!file.is_open()) {

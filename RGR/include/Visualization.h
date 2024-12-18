@@ -34,6 +34,10 @@ void saveGraphData(const std::string& filePath, const Signal& data);
 void saveGraphData(const std::string& filePath, const BitSequence& data);
 void saveGraphData(const std::string& filePath,
                    const std::vector<std::pair<double, double>>& data);
+void saveGraphData(const std::string& filePath,
+                   const std::vector<std::pair<double, int>>& data);
+void saveGraphData(const std::string& filePath,
+                   const std::vector<std::pair<int, double>>& data);
 }  // namespace Visualization
 
 #endif  // VISUALIZATION_H

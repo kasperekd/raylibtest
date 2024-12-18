@@ -5,7 +5,7 @@ BitSequence interpretSymbols(const Signal& signal, size_t N, double P) {
     if (N <= 0) {
         throw std::invalid_argument("N должно быть больше нуля.");
     }
-
+    P = 0.5;
     BitSequence result = {};
     size_t numSamples = signal.size();
 

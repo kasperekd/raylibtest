@@ -43,11 +43,11 @@ void insertVector(Signal& target, const Signal& source, size_t position) {
 void removeRange(BitSequence& bits, size_t start, size_t end) {
     if (start >= bits.size()) {
         throw std::out_of_range("Начальный индекс выходит за пределы вектора.");
-    }
-    if (end > bits.size()) {
+    } else if (end > bits.size()) {
         end = bits.size();
-    }
-    if (start >= end) {
+    } else if (start == end) {
+        return;
+    } else if (start >= end) {
         throw std::invalid_argument(
             "Начальный индекс должен быть меньше конечного индекса.");
     }
@@ -58,11 +58,11 @@ void removeRange(BitSequence& bits, size_t start, size_t end) {
 void removeRange(Signal& bits, size_t start, size_t end) {
     if (start >= bits.size()) {
         throw std::out_of_range("Начальный индекс выходит за пределы вектора.");
-    }
-    if (end > bits.size()) {
+    } else if (end > bits.size()) {
         end = bits.size();
-    }
-    if (start >= end) {
+    } else if (start == end) {
+        return;
+    } else if (start >= end) {
         throw std::invalid_argument(
             "Начальный индекс должен быть меньше конечного индекса.");
     }
@@ -73,11 +73,11 @@ void removeRange(Signal& bits, size_t start, size_t end) {
 BitSequence getRange(const BitSequence& bits, size_t start, size_t end) {
     if (start >= bits.size()) {
         throw std::out_of_range("Начальный индекс выходит за пределы вектора.");
-    }
-    if (end > bits.size()) {
+    } else if (end > bits.size()) {
         end = bits.size();
-    }
-    if (start >= end) {
+    } else if (start == end) {
+        return bits;
+    } else if (start >= end) {
         throw std::invalid_argument(
             "Начальный индекс должен быть меньше конечного индекса.");
     }
@@ -88,11 +88,11 @@ BitSequence getRange(const BitSequence& bits, size_t start, size_t end) {
 Signal getRange(const Signal& bits, size_t start, size_t end) {
     if (start >= bits.size()) {
         throw std::out_of_range("Начальный индекс выходит за пределы вектора.");
-    }
-    if (end > bits.size()) {
+    } else if (end > bits.size()) {
         end = bits.size();
-    }
-    if (start >= end) {
+    } else if (start == end) {
+        return bits;
+    } else if (start >= end) {
         throw std::invalid_argument(
             "Начальный индекс должен быть меньше конечного индекса.");
     }
