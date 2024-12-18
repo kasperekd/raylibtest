@@ -25,7 +25,6 @@ def parse_description_file(description_file_path):
     return graphs
 
 def load_graph_data(file_path):
-    """Loads x, y data from the specified file."""
     x, y = [], []
     with open(file_path, 'r') as file:
         for line in file:
@@ -61,7 +60,7 @@ def plot_graphs(description_file_path):
     for subplot_index, graphs in sorted(subplots.items()):
         fig, ax = plt.subplots(len(graphs), 1, figsize=(8, 4 * len(graphs)))
         if len(graphs) == 1:
-            ax = [ax]  # Ensure ax is always a list
+            ax = [ax] 
 
         for idx, graph in enumerate(graphs):
             current_ax = ax[idx]

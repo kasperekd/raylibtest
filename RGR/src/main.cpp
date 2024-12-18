@@ -39,7 +39,6 @@ int main() {
         Visualization::printBitSequence(crc_bit, "CRC bits:");
 
         // 4. GOLD
-        // TODO: Визуализировать на графике ? мб автокорреляцию
         BitSequence gold = BitSequenceModule::generateGoldSequence();
         Visualization::printBitSequence(gold, "GOLD bits:");
 
@@ -175,7 +174,7 @@ int main() {
             SignalProcessing::oversample(signalForChange, N / 2);
         Signal mediumSignal = SignalProcessing::oversample(signalForChange, N);
         Signal largeSignal =
-            SignalProcessing::oversample(signalForChange, N * 2);
+            SignalProcessing::oversample(signalForChange, N * 40);
 
         Signal shortSignalArray(shortSignal.size() * 2, 0.0f);
         Signal mediumSignalArray(mediumSignal.size() * 2, 0.0f);

@@ -25,7 +25,6 @@ def parse_description_file(description_file_path):
     return graphs
 
 def load_graph_data(file_path):
-    """Loads x, y data from the specified file."""
     x, y = [], []
     with open(file_path, 'r') as file:
         for line in file:
@@ -40,7 +39,6 @@ def load_graph_data(file_path):
     return x, y
 
 def plot_graphs(description_file_path):
-    """Reads the description file and generates plots accordingly."""
     graphs = parse_description_file(description_file_path)
     overlay_active = False
 
@@ -48,7 +46,6 @@ def plot_graphs(description_file_path):
         x, y = load_graph_data(graph["file_path"])
 
         if not graph["overlay"] and overlay_active:
-            # Finish previous overlay and start a new figure
             plt.legend()
             plt.show()
             overlay_active = False
