@@ -14,7 +14,7 @@ u_int32_t generateCRC(const BitSequence& data, CRCType crcType,
     switch (crcType) {
         case CRCType::CRC16: {
             const u_int16_t polynomial = 0xA001;  // Полином для CRC-16
-            crc = 0;  // Инициализация CRC
+            crc = 0;
             augmentedData.insert(augmentedData.end(), crcLength, 0);
 
             for (size_t i = 0; i < augmentedData.size(); ++i) {
