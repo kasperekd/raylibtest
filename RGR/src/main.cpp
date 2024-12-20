@@ -12,29 +12,19 @@
 
 int additionalTask(std::vector<Visualization::GraphDescription>& descriptions) {
     BitSequence bitSequence = BitSequenceModule::encodeToASCII("we we");
-
     BitSequence bitSequence_ = BitSequenceModule::encodeHamming(bitSequence);
-    // BitSequence bitSequence_ =
-    //     BitSequenceModule::decodeHammingWithParity(bitSequence_);
 
     constexpr size_t CRC_LENGTH = 16;
-    constexpr BitSequenceModule::CRCType CRC_TYPE =
-        BitSequenceModule::CRCType::CRC16;
-    u_int32_t crc =
-        BitSequenceModule::generateCRC(bitSequence, CRC_TYPE, CRC_LENGTH);
-    u_int32_t crc_ =
-        BitSequenceModule::generateCRC(bitSequence_, CRC_TYPE, CRC_LENGTH);
+    constexpr BitSequenceModule::CRCType CRC_TYPE = BitSequenceModule::CRCType::CRC16;
+    u_int32_t crc = BitSequenceModule::generateCRC(bitSequence, CRC_TYPE, CRC_LENGTH);
+    u_int32_t crc_ = BitSequenceModule::generateCRC(bitSequence_, CRC_TYPE, CRC_LENGTH);
 
-    BitSequence crc_bit =
-        BitSequenceModule::numberToBitSequence(crc, CRC_LENGTH);
-    BitSequence crc_bit_ =
-        BitSequenceModule::numberToBitSequence(crc_, CRC_LENGTH);
-
+    BitSequence crc_bit = BitSequenceModule::numberToBitSequence(crc, CRC_LENGTH);
+    BitSequence crc_bit_ = BitSequenceModule::numberToBitSequence(crc_, CRC_LENGTH);
     BitSequence gold = BitSequenceModule::generateGoldSequence();
 
     size_t messageLength = bitSequence.size();
     size_t messageLength_ = bitSequence_.size();
-    // std::cout << messageLength << "\n";
     if ((messageLength > (1 << 16)) && (messageLength > (1 << 16))) {
         throw std::overflow_error("Размер сообщения превышает 2^16 бит.");
     }
@@ -54,115 +44,78 @@ int additionalTask(std::vector<Visualization::GraphDescription>& descriptions) {
         Utilities::combineBitSequences(bitSequence, crc_bit));
     Signal signal = Utilities::convertToSignal(combinedSeq);
     signal = SignalProcessing::oversample(signal, N);
-    size_t Nx = signal.size();  // Размер сообщения
+    size_t Nx = signal.size();
 
     BitSequence combinedSeq_ = Utilities::combineBitSequences(
         Utilities::combineBitSequences(gold, len_),
         Utilities::combineBitSequences(bitSequence_, crc_bit_));
     Signal signal_ = Utilities::convertToSignal(combinedSeq_);
     signal_ = SignalProcessing::oversample(signal_, N);
-    size_t Nx_ = signal_.size();  // Размер сообщения
-
-    // Signal signalArray(Nx * 2, 0.0f);
-    // std::copy(signal.begin(), signal.end(),
-    //           signalArray.begin() + signal.size() / 2);
-
-    Signal signalArray = signal;
-    Signal signalArray_ = signal_;
+    size_t Nx_ = signal_.size();
 
     double mu = 0.0;
-
     std::vector<std::pair<int, double>> sigmaErrors;
     std::vector<std::pair<int, double>> sigmaErrors_;
     std::vector<std::pair<int, double>> sigmaErrors__;
 
     size_t goldSize = gold.size() * N;
-    // size_t lenStart = goldSize;  // len начинается сразу за GOLD
     size_t lenStart = 0;
     size_t lenEnd = lenStart + 16 * N + goldSize;
 
-    for (double sigma = 0.00; sigma <= 0.18; sigma += 0.00005) {
-        Signal noise = SignalProcessing::generateWhiteNoise(Nx_, mu, sigma);
+    const int numIterations = 20;
 
-        for (size_t i = 0; i < signalArray.size() && i < noise.size(); i++) {
-            if (i < lenStart || i >= lenEnd) {  // Пропускаем диапазон
-                signalArray[i] += noise[i];
+    for (double sigma = 0.0; sigma <= 0.9; sigma += 0.01) {
+            Signal signalArray = signal;
+        Signal signalArray_ = signal_;
+        double totalBitErrors = 0;
+        double totalBitErrors_ = 0;
+        double totalBitErrors__ = 0;
+
+        for (int iteration = 0; iteration < numIterations; iteration++) {
+            Signal noise = SignalProcessing::generateWhiteNoise(Nx_, mu, sigma);
+
+            for (size_t i = 0; i < signalArray.size() && i < noise.size(); i++) {
+                if (i < lenStart || i >= lenEnd) {  // Пропускаем диапазон
+                    signalArray[i] += noise[i];
+                }
             }
-        }
 
-        for (size_t i = 0; i < signalArray_.size() && i < noise.size(); i++) {
-            if (i < lenStart || i >= lenEnd) {  // Пропускаем диапазон
-                signalArray_[i] += noise[i];
+            for (size_t i = 0; i < signalArray_.size() && i < noise.size(); i++) {
+                if (i < lenStart || i >= lenEnd) {  // Пропускаем диапазон
+                    signalArray_[i] += noise[i];
+                }
             }
-        }
 
-        // Прием
-        BitSequence gold_oversampled = SignalProcessing::oversample(gold, N);
-        Signal received = signalArray;
-        // 0.6 это thrust factor для поиска корреляции
-        size_t start_index = SignalAnalysis::findSequenceInSignal(
-            received, gold_oversampled, 0.6);
-        Utilities::removeRange(received, 0, start_index);
-        BitSequence interpreted =
-            SignalAnalysis::interpretSymbols(received, N, sigma);
-        // SignalAnalysis::interpretSymbols(received, N, 0.5);
-        Utilities::removeRange(interpreted, 0, gold.size());
-        BitSequence receivedLen = Utilities::getRange(interpreted, 0, 16);
-        Utilities::removeRange(interpreted, 0, 16);
-        size_t messageLengthReceive =
-            SignalAnalysis::getMessageLength(receivedLen);
+            // Прием
+            BitSequence gold_oversampled = SignalProcessing::oversample(gold, N);
+            Signal received = signalArray;
+            size_t start_index = SignalAnalysis::findSequenceInSignal(received, gold_oversampled, 0.6);
+            Utilities::removeRange(received, 0, start_index);
+            BitSequence interpreted = SignalAnalysis::interpretSymbols(received, N, sigma);
+            Utilities::removeRange(interpreted, 0, gold.size());
+            BitSequence receivedLen = Utilities::getRange(interpreted, 0, 16);
+            Utilities::removeRange(interpreted, 0, 16);
+            size_t messageLengthReceive = SignalAnalysis::getMessageLength(receivedLen);
+            BitSequence receivedBitMessage = Utilities::getRange(interpreted, 0, messageLengthReceive);
 
-        BitSequence receivedBitMessage =
-            Utilities::getRange(interpreted, 0, messageLengthReceive);
+            Signal received_ = signalArray_;
+            size_t start_index_ = SignalAnalysis::findSequenceInSignal(received_, gold_oversampled, 0.6);
+            Utilities::removeRange(received_, 0, start_index_);
+            BitSequence interpreted_ = SignalAnalysis::interpretSymbols(received_, N, sigma);
+            Utilities::removeRange(interpreted_, 0, gold.size());
+            BitSequence receivedLen_ = Utilities::getRange(interpreted_, 0, 16);
+            Utilities::removeRange(interpreted_, 0, 16);
+            size_t messageLengthReceive_ = SignalAnalysis::getMessageLength(receivedLen_);
+            BitSequence receivedBitMessage_ = Utilities::getRange(interpreted_, 0, messageLengthReceive_);
 
-        // BitSequence receivedBitCRC = Utilities::getRange(
-        //     interpreted, messageLengthReceive, messageLengthReceive + 16);
-        // int32_t receivedCRC =
-        //     BitSequenceModule::bitSequenceToNumber(receivedBitCRC);
-        // u_int32_t newCrc = BitSequenceModule::generateCRC(receivedBitMessage,
-        //   CRC_TYPE, CRC_LENGTH);
-
-        Signal received_ = signalArray_;
-        size_t start_index_ = SignalAnalysis::findSequenceInSignal(
-            received_, gold_oversampled, 0.6);
-        Utilities::removeRange(received_, 0, start_index_);
-        BitSequence interpreted_ =
-            // SignalAnalysis::interpretSymbols(received_, N, 0.5);
-            SignalAnalysis::interpretSymbols(received_, N, sigma);
-        Utilities::removeRange(interpreted_, 0, gold.size());
-        BitSequence receivedLen_ = Utilities::getRange(interpreted_, 0, 16);
-        Utilities::removeRange(interpreted_, 0, 16);
-        size_t messageLengthReceive_ =
-            SignalAnalysis::getMessageLength(receivedLen_);
-
-        BitSequence receivedBitMessage_ =
-            Utilities::getRange(interpreted_, 0, messageLengthReceive_);
-
-        // BitSequence receivedBitCRC_ = Utilities::getRange(
-        //     interpreted_, messageLengthReceive_, messageLengthReceive_ + 16);
-        // int32_t receivedCRC_ =
-        //     BitSequenceModule::bitSequenceToNumber(receivedBitCRC_);
-        // u_int32_t newCrc_ = BitSequenceModule::generateCRC(
-        //     receivedBitMessage_, CRC_TYPE, CRC_LENGTH);
-        // if (newCrc != receivedCRC) {
-        //     // std::cout << "Received CRC incorrect: " << std::hex <<
-        //     // receivedCRC
-        //     //           << std::dec << "\n";
-        // }
-        // if (newCrc_ != receivedCRC_) {
-        //     // std::cout << "Received CRC incorrect: " << std::hex <<
-        //     // receivedCRC
-        //     //           << std::dec << "\n";
-        // }
-
-        // Подсчет числа ошибок
-        size_t bitErrors = 0;
+             size_t bitErrors = 0;
         for (size_t i = 0; i < receivedBitMessage.size(); ++i) {
             if (i < bitSequence.size() &&
                 receivedBitMessage[i] != bitSequence[i]) {
                 ++bitErrors;
             }
         }
+        totalBitErrors+= bitErrors;
         size_t bitErrors__ = 0;
         for (size_t i = 0; i < receivedBitMessage_.size(); ++i) {
             if (i < bitSequence.size() &&
@@ -170,7 +123,7 @@ int additionalTask(std::vector<Visualization::GraphDescription>& descriptions) {
                 ++bitErrors__;
             }
         }
-
+        totalBitErrors__ +=bitErrors__;
         receivedBitMessage_ =
             BitSequenceModule::decodeHamming(receivedBitMessage_);
         // BitSequenceModule::decodeHammingWithParity(receivedBitMessage_);
@@ -181,13 +134,21 @@ int additionalTask(std::vector<Visualization::GraphDescription>& descriptions) {
                 ++bitErrors_;
             }
         }
+        totalBitErrors_ += bitErrors_;
+        }
 
-        sigmaErrors.emplace_back(bitErrors, sigma);
-        sigmaErrors_.emplace_back(bitErrors_, sigma);
-        sigmaErrors__.emplace_back(bitErrors__, sigma);
+        // size_t averageBitErrors = totalBitErrors;
+        // size_t averageBitErrors_ = totalBitErrors_;
+        // size_t averageBitErrors__ = totalBitErrors__ ;
+        size_t averageBitErrors = totalBitErrors / numIterations;
+        size_t averageBitErrors_ = totalBitErrors_ / numIterations;
+        size_t averageBitErrors__ = totalBitErrors__ / numIterations;
 
-        // std::cout << "Sigma: " << sigma << " | Bit errors: " << bitErrors
-        //           << "\n";
+        sigmaErrors.emplace_back(averageBitErrors, sigma);
+        sigmaErrors_.emplace_back(averageBitErrors_, sigma);
+        sigmaErrors__.emplace_back(averageBitErrors__, sigma);
+
+        // std::cout << "Sigma: " << sigma << " | Average Bit errors: " << averageBitErrors << "\n";
     }
 
     Visualization::saveGraphData("./data/(1,3,1)extra_1.txt", sigmaErrors);
@@ -206,7 +167,209 @@ int additionalTask(std::vector<Visualization::GraphDescription>& descriptions) {
          "sigma", "bit err", true});
 
     return 0;
+
 }
+
+
+
+
+// int additionalTask(std::vector<Visualization::GraphDescription>& descriptions) {
+//     BitSequence bitSequence = BitSequenceModule::encodeToASCII("we we");
+
+//     BitSequence bitSequence_ = BitSequenceModule::encodeHamming(bitSequence);
+//     // BitSequence bitSequence_ =
+//     //     BitSequenceModule::decodeHammingWithParity(bitSequence_);
+
+//     constexpr size_t CRC_LENGTH = 16;
+//     constexpr BitSequenceModule::CRCType CRC_TYPE =
+//         BitSequenceModule::CRCType::CRC16;
+//     u_int32_t crc =
+//         BitSequenceModule::generateCRC(bitSequence, CRC_TYPE, CRC_LENGTH);
+//     u_int32_t crc_ =
+//         BitSequenceModule::generateCRC(bitSequence_, CRC_TYPE, CRC_LENGTH);
+
+//     BitSequence crc_bit =
+//         BitSequenceModule::numberToBitSequence(crc, CRC_LENGTH);
+//     BitSequence crc_bit_ =
+//         BitSequenceModule::numberToBitSequence(crc_, CRC_LENGTH);
+
+//     BitSequence gold = BitSequenceModule::generateGoldSequence();
+
+//     size_t messageLength = bitSequence.size();
+//     size_t messageLength_ = bitSequence_.size();
+//     // std::cout << messageLength << "\n";
+//     if ((messageLength > (1 << 16)) && (messageLength > (1 << 16))) {
+//         throw std::overflow_error("Размер сообщения превышает 2^16 бит.");
+//     }
+
+//     BitSequence len(16, 0);
+//     for (int i = 0; i < 16; ++i) {
+//         len[15 - i] = (messageLength >> i) & 1;
+//     }
+
+//     BitSequence len_(16, 0);
+//     for (int i = 0; i < 16; ++i) {
+//         len_[15 - i] = (messageLength_ >> i) & 1;
+//     }
+
+//     BitSequence combinedSeq = Utilities::combineBitSequences(
+//         Utilities::combineBitSequences(gold, len),
+//         Utilities::combineBitSequences(bitSequence, crc_bit));
+//     Signal signal = Utilities::convertToSignal(combinedSeq);
+//     signal = SignalProcessing::oversample(signal, N);
+//     size_t Nx = signal.size();  // Размер сообщения
+
+//     BitSequence combinedSeq_ = Utilities::combineBitSequences(
+//         Utilities::combineBitSequences(gold, len_),
+//         Utilities::combineBitSequences(bitSequence_, crc_bit_));
+//     Signal signal_ = Utilities::convertToSignal(combinedSeq_);
+//     signal_ = SignalProcessing::oversample(signal_, N);
+//     size_t Nx_ = signal_.size();  // Размер сообщения
+
+//     // Signal signalArray(Nx * 2, 0.0f);
+//     // std::copy(signal.begin(), signal.end(),
+//     //           signalArray.begin() + signal.size() / 2);
+
+//     Signal signalArray = signal;
+//     Signal signalArray_ = signal_;
+
+//     double mu = 0.0;
+
+//     std::vector<std::pair<int, double>> sigmaErrors;
+//     std::vector<std::pair<int, double>> sigmaErrors_;
+//     std::vector<std::pair<int, double>> sigmaErrors__;
+
+//     size_t goldSize = gold.size() * N;
+//     // size_t lenStart = goldSize;  // len начинается сразу за GOLD
+//     size_t lenStart = 0;
+//     size_t lenEnd = lenStart + 16 * N + goldSize;
+
+//     for (double sigma = 0.00; sigma <= 0.18; sigma += 0.00005) {
+//         Signal noise = SignalProcessing::generateWhiteNoise(Nx_, mu, sigma);
+
+//         for (size_t i = 0; i < signalArray.size() && i < noise.size(); i++) {
+//             if (i < lenStart || i >= lenEnd) {  // Пропускаем диапазон
+//                 signalArray[i] += noise[i];
+//             }
+//         }
+
+//         for (size_t i = 0; i < signalArray_.size() && i < noise.size(); i++) {
+//             if (i < lenStart || i >= lenEnd) {  // Пропускаем диапазон
+//                 signalArray_[i] += noise[i];
+//             }
+//         }
+
+//         // Прием
+//         BitSequence gold_oversampled = SignalProcessing::oversample(gold, N);
+//         Signal received = signalArray;
+//         // 0.6 это thrust factor для поиска корреляции
+//         size_t start_index = SignalAnalysis::findSequenceInSignal(
+//             received, gold_oversampled, 0.6);
+//         Utilities::removeRange(received, 0, start_index);
+//         BitSequence interpreted =
+//             SignalAnalysis::interpretSymbols(received, N, sigma);
+//         // SignalAnalysis::interpretSymbols(received, N, 0.5);
+//         Utilities::removeRange(interpreted, 0, gold.size());
+//         BitSequence receivedLen = Utilities::getRange(interpreted, 0, 16);
+//         Utilities::removeRange(interpreted, 0, 16);
+//         size_t messageLengthReceive =
+//             SignalAnalysis::getMessageLength(receivedLen);
+
+//         BitSequence receivedBitMessage =
+//             Utilities::getRange(interpreted, 0, messageLengthReceive);
+
+//         // BitSequence receivedBitCRC = Utilities::getRange(
+//         //     interpreted, messageLengthReceive, messageLengthReceive + 16);
+//         // int32_t receivedCRC =
+//         //     BitSequenceModule::bitSequenceToNumber(receivedBitCRC);
+//         // u_int32_t newCrc = BitSequenceModule::generateCRC(receivedBitMessage,
+//         //   CRC_TYPE, CRC_LENGTH);
+
+//         Signal received_ = signalArray_;
+//         size_t start_index_ = SignalAnalysis::findSequenceInSignal(
+//             received_, gold_oversampled, 0.6);
+//         Utilities::removeRange(received_, 0, start_index_);
+//         BitSequence interpreted_ =
+//             // SignalAnalysis::interpretSymbols(received_, N, 0.5);
+//             SignalAnalysis::interpretSymbols(received_, N, sigma);
+//         Utilities::removeRange(interpreted_, 0, gold.size());
+//         BitSequence receivedLen_ = Utilities::getRange(interpreted_, 0, 16);
+//         Utilities::removeRange(interpreted_, 0, 16);
+//         size_t messageLengthReceive_ =
+//             SignalAnalysis::getMessageLength(receivedLen_);
+
+//         BitSequence receivedBitMessage_ =
+//             Utilities::getRange(interpreted_, 0, messageLengthReceive_);
+
+//         // BitSequence receivedBitCRC_ = Utilities::getRange(
+//         //     interpreted_, messageLengthReceive_, messageLengthReceive_ + 16);
+//         // int32_t receivedCRC_ =
+//         //     BitSequenceModule::bitSequenceToNumber(receivedBitCRC_);
+//         // u_int32_t newCrc_ = BitSequenceModule::generateCRC(
+//         //     receivedBitMessage_, CRC_TYPE, CRC_LENGTH);
+//         // if (newCrc != receivedCRC) {
+//         //     // std::cout << "Received CRC incorrect: " << std::hex <<
+//         //     // receivedCRC
+//         //     //           << std::dec << "\n";
+//         // }
+//         // if (newCrc_ != receivedCRC_) {
+//         //     // std::cout << "Received CRC incorrect: " << std::hex <<
+//         //     // receivedCRC
+//         //     //           << std::dec << "\n";
+//         // }
+
+//         // Подсчет числа ошибок
+//         size_t bitErrors = 0;
+//         for (size_t i = 0; i < receivedBitMessage.size(); ++i) {
+//             if (i < bitSequence.size() &&
+//                 receivedBitMessage[i] != bitSequence[i]) {
+//                 ++bitErrors;
+//             }
+//         }
+//         size_t bitErrors__ = 0;
+//         for (size_t i = 0; i < receivedBitMessage_.size(); ++i) {
+//             if (i < bitSequence.size() &&
+//                 receivedBitMessage_[i] != bitSequence_[i]) {
+//                 ++bitErrors__;
+//             }
+//         }
+
+//         receivedBitMessage_ =
+//             BitSequenceModule::decodeHamming(receivedBitMessage_);
+//         // BitSequenceModule::decodeHammingWithParity(receivedBitMessage_);
+//         size_t bitErrors_ = 0;
+//         for (size_t i = 0; i < receivedBitMessage_.size(); ++i) {
+//             if (i < bitSequence.size() &&
+//                 receivedBitMessage_[i] != bitSequence[i]) {
+//                 ++bitErrors_;
+//             }
+//         }
+
+//         sigmaErrors.emplace_back(bitErrors, sigma);
+//         sigmaErrors_.emplace_back(bitErrors_, sigma);
+//         sigmaErrors__.emplace_back(bitErrors__, sigma);
+
+//         // std::cout << "Sigma: " << sigma << " | Bit errors: " << bitErrors
+//         //           << "\n";
+//     }
+
+//     Visualization::saveGraphData("./data/(1,3,1)extra_1.txt", sigmaErrors);
+//     descriptions.push_back({"./data/(1,3,1)extra_1.txt", "plot", "x,y",
+//                             "Message len: " + std::to_string(messageLength),
+//                             "sigma", "bit err", true});
+//     Visualization::saveGraphData("./data/(1,3,2)extra_2.txt", sigmaErrors_);
+//     descriptions.push_back(
+//         {"./data/(1,3,2)extra_2.txt", "plot", "x,y",
+//          "Hamming. Message len: " + std::to_string(messageLength), "sigma",
+//          "bit err", true});
+//     Visualization::saveGraphData("./data/(1,3,3)extra_3.txt", sigmaErrors__);
+//     descriptions.push_back(
+//         {"./data/(1,3,3)extra_3.txt", "plot", "x,y",
+//          "Hamming (origin). Message len: " + std::to_string(messageLength),
+//          "sigma", "bit err", true});
+
+//     return 0;
+// }
 
 // int additionalTask2(
 //     std::vector<Visualization::GraphDescription>& descriptions) {
