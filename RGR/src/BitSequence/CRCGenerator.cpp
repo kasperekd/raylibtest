@@ -14,11 +14,11 @@ u_int32_t generateCRC(const BitSequence& data, CRCType crcType,
     switch (crcType) {
         case CRCType::CRC16: {
             const u_int16_t polynomial = 0xA001;  // Полином для CRC-16
-            crc = 0;  // Инициализация CRC
+            crc = 0;
             augmentedData.insert(augmentedData.end(), crcLength, 0);
 
             for (size_t i = 0; i < augmentedData.size(); ++i) {
-                crc ^= (augmentedData[i] << 8);  // Обработка каждого байта
+                crc ^= (augmentedData[i] << 8);
                 for (size_t j = 0; j < 8; ++j) {
                     if (crc & 0x8000) {
                         crc = (crc << 1) ^ polynomial;
@@ -27,16 +27,16 @@ u_int32_t generateCRC(const BitSequence& data, CRCType crcType,
                     }
                 }
             }
-            crc &= 0xFFFF;  // Убедимся, что CRC-16 в пределах 16 бит
+            crc &= 0xFFFF;
             break;
         }
         case CRCType::CRC32: {
             const u_int32_t polynomial = 0xEDB88320;  // Полином для CRC-32
-            crc = 0xFFFFFFFF;  // Инициализация CRC
+            crc = 0xFFFFFFFF;
             augmentedData.insert(augmentedData.end(), crcLength, 0);
 
             for (size_t i = 0; i < augmentedData.size(); ++i) {
-                crc ^= augmentedData[i];  // Обработка каждого байта
+                crc ^= augmentedData[i];
                 for (size_t j = 0; j < 8; ++j) {
                     if (crc & 1) {
                         crc = (crc >> 1) ^ polynomial;
@@ -45,7 +45,7 @@ u_int32_t generateCRC(const BitSequence& data, CRCType crcType,
                     }
                 }
             }
-            crc ^= 0xFFFFFFFF;  // Финальная инверсия
+            crc ^= 0xFFFFFFFF;
             break;
         }
         default:
